@@ -1,0 +1,74 @@
+<!-- <div class="row">
+  <h3>{{layerName}}</h3>
+</div>
+<div *ngIf="featureData.length > 1" class="row">
+  <div class="col">
+    <a mdbBtn floating="true" size="sm" (click)="selectNextFeature('backward')" color="blue" mdbWavesEffect><i class="fa fa-backward" aria-hidden="true"></i></a>
+  </div>
+  <div class="col mt-3">
+    {{selFeatureNum}} of {{featureData.length}}
+  </div>
+  <div class="col">
+    <a mdbBtn floating="true" size="sm" (click)="selectNextFeature('forward')" color="blue" mdbWavesEffect><i class="fa fa-forward" aria-hidden="true"></i></a>
+  </div>
+</div> -->
+<div class="row">
+  <form (ngSubmit)="save()" [formGroup]="form" class="w-100">
+    <div *ngFor="let field of fields">
+      <ngx-field [field]="field" [form]="form"></ngx-field>
+    </div>
+
+    <button type="button" (click)="save()" [disabled]="saving || formEnabled" [nbSpinner]="saving" nbButton status="success">
+      Save
+    </button>
+    <button class="ml" type="button" [disabled]="saving || formEnabled" nbButton status="light" (click)="cancelClick()">Cancel</button>
+
+    <!-- <div class="md-form">
+    <button mdbBtn type="button" block="true" (click)="editGeometry()" [disabled]="!form.valid" color="info" class="waves-light" mdbWavesEffect>{{editState}}</button>
+  </div>
+
+  <div class="md-form">
+    <button mdbBtn type="button" block="true" (click)="showDeleteConfirm()" [disabled]="!form.valid" color="danger" class="waves-light" mdbWavesEffect>Delete Feature
+      <i [hidden]="!deleting" class="fa fa-spinner fa-spin"></i>
+    </button>
+  </div> -->
+  </form>
+</div>
+
+<!-- <div class="row top-margin" style="float: left;">
+  Number related burial records: {{burialCount}}
+</div>
+
+<div class="row top-margin" style="float: left;">
+  Number related sales records: {{salesCount}}
+</div> -->
+
+<!-- <div *ngIf="hasAttachments === true" class="float-left">
+  Attachments:
+  <div *ngIf="attachments.length > 0">
+    <div *ngFor="let attachment of attachments"><a [href]="attachment.url" target="_blank">{{attachment.name}}</a>&nbsp;&nbsp;
+      <a (click)="deleteAttachments(attachment)">
+        <i [hidden]="attachment.deleting" class="fa fa-times" aria-hidden="true"></i>
+        <i [hidden]="!attachment.deleting" class="fa fa-spinner fa-spin"></i>
+      </a>
+    </div>
+  </div>
+  <div *ngIf="attachments.length === 0">
+    No attachments
+  </div>
+  <form *ngIf="hasAttachments === true">
+    <div class="file-field md-form">
+      <div mdbBtn floating="true" size="sm" color="success" mdbWavesEffect>
+        <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+        <input type="file" mdbFileSelect (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput">
+      </div>
+      <div class="file-path-wrapper mt-3">
+        <input class="file-path" type="text" placeholder="Upload your file" [value]="showFiles()">
+      </div>
+    </div>
+    <button mdbBtn [disabled]="uploading === true" type="button" size="sm" color="success" class="waves-light" (click)="startUpload()" mdbWavesEffect>
+      Upload File
+      <i [hidden]="!uploading" class="fa fa-spinner fa-spin"></i>
+    </button>
+  </form>
+</div> -->

@@ -1,0 +1,215 @@
+<div class="add-padding pull-left">
+  <nb-card [hidden]="!isLoading" [nbSpinner]="isLoading" nbSpinnerSize="small" nbSpinnerStatus="primary">
+    <nb-card-body>
+    </nb-card-body>
+  </nb-card>
+  <!-- Data Editing Form -->
+  <!-- <div class="row">
+    <p (click)="clearResults()"><nb-icon icon="arrow-left"></nb-icon><span> Back</span></p>
+  </div> -->
+  <div class="row">
+    <nb-card [hidden]="selectedPerson === ''" accent="info">
+      <nb-card-body status="warning">
+        {{selectedPerson?.surname}}<span >,&nbsp;</span>{{selectedPerson?.name}}
+      </nb-card-body>
+    </nb-card>  
+  </div>
+  <div class="row">
+    <input type="text" nbInput fullWidth placeholder="Service Number" [(ngModel)]="serviceNumber"
+      (keyup.enter)="searchByServiceNumber()">
+      <hr>
+      <input nbInput fullWidth placeholder="Funeral Date From:  (optional)" [nbDatepicker]="datepickerMin" [(ngModel)]="dateMin"
+      (keyup.enter)="searchByServiceNumber()">
+      <nb-datepicker nbInput fullWidth placeholder="Funeral date From: (optional)" #datepickerMin></nb-datepicker>
+      <input nbInput fullWidth placeholder="Funeral Date To: (optional)" [nbDatepicker]="datepickerMax" [(ngModel)]="dateMax"
+      (keyup.enter)="searchByServiceNumber()">
+      <nb-datepicker nbInput fullWidth placeholder="Funeral date To: (optional)" #datepickerMax></nb-datepicker>
+  </div>
+  <div class="row">
+    <span [hidden]="burialsFound == true">No results found</span>
+  </div>
+  <div class="row">
+    <button nbButton [disabled]="searching" [nbSpinner]="searching" status="success" (click)="searchByServiceNumber()">
+      <nb-icon icon="search-outline"></nb-icon>
+      Search
+    </button>
+    <button nbButton class="ml" status="danger" (click)="clearResults()">
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+    <!-- <button nbButton class="ml" status="info" (click)="addNewPerson()">
+      <nb-icon icon="plus-outline"></nb-icon>
+      Add
+    </button> -->
+  </div>
+  <!-- Search Results -->
+  <div class="row to-edit cursor-pointer" [hidden]="burialClicked === false || editClicked === true"
+    (click)="editBurial(true)">
+    Edit Burial Record: {{serviceNo}}
+    <nb-icon *ngIf="loading === false" icon="edit-outline"></nb-icon>
+    <nb-icon *ngIf="loading === true" icon="loader-outline"></nb-icon>
+  </div>
+  <div class="row editing cursor-pointer" [hidden]="editClicked === false" (click)="editBurial(false)">
+    Stop Editing
+    <nb-icon icon="edit-outline"></nb-icon>
+  </div>
+  <div [hidden]="numBurials === 0 || burialClicked === true">
+    <div class="row">
+      <table class="full-table">
+          <tr *ngIf="burialRecords.length > 0">
+              <td><strong>Service No.</strong></td>
+              <td></td>
+            </tr>
+        <tr *ngFor="let burial of burialRecords | paginate: { itemsPerPage: 10, currentPage: p3, id: 'thisBurial' }"
+          class="notfirst" (click)="selectBurial(burial)">
+          <td>{{burial.display}}</td>
+          <td>
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+      <pagination-controls (pageChange)="p3 = $event" id="thisBurial" autoHide="true"></pagination-controls>
+    </div>
+  </div>
+  <!-- Data Editing Form -->
+  <ngx-features [featureData]="formData" *ngIf="editClicked === true" (cancel)="cancel()"
+    (saveComplete)="addBurialComplete($event)"></ngx-features>
+  <!-- Related Information -->
+  <div [hidden]="burialClicked === false">
+    <!-- Grave site related record results -->
+    <div class="row">
+      Related Grave Sites ({{numGraveSites}})
+    </div>
+    <div class="row" [hidden]="arcgisService.data.Gravesites.length === 0">
+      <table class="full-table">
+          <tr>
+              <td><strong>Location</strong></td>
+              <td></td>
+            </tr>
+        <tr *ngFor="let grave of arcgisService.data.Gravesites" class="notfirst" (click)="selectGrave(grave)">
+          <td>{{grave.Location}}</td>
+          <td>
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Deceased related record results -->
+    <div class="row">
+      Related Deceased Records ({{numDeceased}})
+    </div>
+    <div class="row" [hidden]="arcgisService.data.DeceasedTable.length === 0">
+      <table class="full-table">
+        <tr>
+          <td><strong>Deceased</strong></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr *ngFor="let deceased of arcgisService.data.DeceasedTable" class="notfirst">
+          <td (click)="selectPeople(deceased, 'deceased')">{{deceased.surname}}, {{deceased.name}}</td>
+          <td (click)="selectPeople(deceased, 'deceased')">
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+          <td (click)="disassociateDeseased(disAssociateDialog, deceased, 'burial')">
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div *ngIf="arcgisService.data.DeceasedTable.length === 0">
+      <div class="row" *ngIf="selectedBurial?.pidno !== 0">
+        <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewPerson('Deceased')">Add New Deceased Record</a>
+      </div>
+      <div class="row">
+        <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addExistingPerson(deceasedDialog, 'deceased')">Relate Existing Deceased Record</a>
+      </div>
+    </div>
+
+    <!-- Representative related record results -->
+    <div class="row">
+      Related Representative Records ({{numRep}})
+    </div>
+    <div class="row" [hidden]="arcgisService.data.RepresentativeTable.length === 0">
+      <table class="full-table">
+        <tr>
+          <td><strong>Representative</strong></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr *ngFor="let rep of arcgisService.data.RepresentativeTable" class="notfirst">
+          <td (click)="selectPeople(rep, 'representative')">{{rep.surname}}, {{rep.name}}</td>
+          <td (click)="selectPeople(rep, 'representative')">
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+          <td (click)="disassociateDeseased(disAssociateDialog, rep, 'representative')">
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <!-- TODO: Does not work.  Relationship class between burial and representative appears to be incorrect -->
+    <div *ngIf="arcgisService.data.RepresentativeTable.length === 0">
+      <div class="row" *ngIf="selectedBurial?.reppid != null && selectedBurial?.reppid !== 0">
+        <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewPerson('Representative')">Add New Representative Record</a>
+      </div>
+      <!-- TODO: need to make search dialog generic so it supports searching for representatives or for deceased records -->
+      <div class="row">
+        <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addExistingPerson(deceasedDialog, 'representative')">Relate Existing Representative Record</a>
+      </div>
+  </div>
+</div>
+
+<!-- Select an existing deceased dialog -->
+<ng-template #deceasedDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>Add deceased to selected burial record</nb-card-header>
+    <nb-card-body>{{ data }}<br/>
+      <div class="row">
+        <input type="text" nbInput fullWidth placeholder="First Name" [(ngModel)]="personFName"
+          (keyup.enter)="searchByName()">
+        <input type="text" nbInput fullWidth placeholder="Last Name" [(ngModel)]="personLName"
+          (keyup.enter)="searchByName()">
+        <button nbButton style="margin-top: 0.7rem;" [disabled]="(personLName.length < 2 && personFName.length < 2 ) || searching" [nbSpinner]="searching" status="success"
+          (click)="searchByName()">
+          <nb-icon icon="search-outline"></nb-icon>
+          Search
+        </button>
+      </div>
+      <!-- <div [hidden]="numPeople === 0 || burialClicked === true"> -->
+      <!-- <div [hidden]="numPeople < 1 || burialClicked === true">   -->
+        <div class="row">
+          <table class="full-table">
+            <tr *ngFor="let person of allPeople | paginate: { itemsPerPage: 10, currentPage: p4, id: 'burialPerson' }"
+              class="notfirst" (click)="selectPerson(person)">
+            <!-- <tr *ngFor="let person of allPeople"
+              class="notfirst" (click)="selectPerson(person)"> -->
+              <td>{{person.display}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="row">
+          <pagination-controls (pageChange)="p4 = $event" id="burialPerson" autoHide="true"></pagination-controls>
+        </div>
+        <div class="row" *ngIf="selectedDeceased != null">
+          Selected person: {{selectedDeceased.surname}}, {{selectedDeceased.name}}
+        </div>
+      <!-- </div> -->
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">Cancel</button>
+      <button nbButton class="ml" (click)="confirmAddDeceasedConnection(ref)" [nbSpinner]="savingRelated" [disabled]="selectedDeceased == null" status="primary">Attach</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- Disassociate deceased dialog -->
+<ng-template #disAssociateDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">No</button>
+      <button nbButton class="ml" (click)="confirmRemoveConnection(ref)" [nbSpinner]="removingRelated" status="danger">Yes</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

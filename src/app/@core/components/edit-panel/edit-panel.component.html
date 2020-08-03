@@ -1,0 +1,20 @@
+<nb-tabset fullWidth *ngIf="panelContent !== 'attributes'" (changeTab)="selectTab($event)">
+  <!-- <nb-tab tabTitle="Home" [active]="activeList['Home']">
+    <home-panel (navigate)="onNavigate($event)"></home-panel>
+  </nb-tab> -->
+  <nb-tab tabTitle="People" [active]="activeList['People']">
+    <ngx-people-records [data]="featureData" (navigate)="onNavigate($event)"></ngx-people-records>
+  </nb-tab>
+  <nb-tab tabTitle="Sales" [active]="activeList['Sales']">
+    <ngx-sale-records [data]="featureData" (navigate)="onNavigate($event)"></ngx-sale-records>
+  </nb-tab>
+  <nb-tab tabTitle="Burials" [active]="activeList['Burials']">
+    <ngx-burial-records [data]="featureData" (navigate)="onNavigate($event)"></ngx-burial-records>
+  </nb-tab>
+  <nb-tab tabTitle="Gravesites" [active]="activeList['Gravesites']">
+    <ngx-gravesite-records [data]="featureData" (navigate)="onNavigate($event)"></ngx-gravesite-records>
+  </nb-tab>
+</nb-tabset>
+<ngx-home-panel></ngx-home-panel>
+
+<!-- <ngx-features [featureData]="formData" *ngIf="panelContent === 'attributes'"></ngx-features> -->

@@ -1,0 +1,31 @@
+<div [formGroup]="form">
+  <div [ngSwitch]="field.controlType" [hidden]="field.hidden">
+
+    <div *ngSwitchCase="'textbox'" class="form-group">
+      <label [attr.for]="field.key" [hidden]="field.hidden" style="float: left;">{{field.label}}</label>
+      <input type="text" nbInput fullWidth [formControlName]="field.key" [maxLength]="field.length" [id]="field.key" [type]="field.type">
+    </div>
+
+    <div *ngSwitchCase="'numberbox'" class="form-group">
+      <label [attr.for]="field.key" [hidden]="field.hidden" style="float: left;">{{field.label}}</label>
+      <input [type]="field.type" nbInput mouseWheel (mouseWheelUp)="mouseWheelUpFunc(event)" fullWidth [formControlName]="field.key" [maxLength]="field.length" [id]="field.key" [type]="field.type">
+    </div>
+
+    <div *ngSwitchCase="'dropdown'" class="">
+      <label [attr.for]="field.key" [hidden]="field.hidden" style="float: left;">{{field.label}}</label>
+      <nb-select fullWidth placeholder="None selected" [id]="field.key" [formControlName]="field.key">
+        <nb-option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</nb-option>
+      </nb-select>
+    </div>
+
+    <div *ngSwitchCase="'date'" class="form-group">
+      <label [attr.for]="field.key" [hidden]="field.hidden" style="float: left;">{{field.label}}</label>
+      <input nbInput fullWidth placeholder="None selected" [id]="field.key" [nbDatepicker]="formcontrol" [formControlName]="field.key">
+      <nb-datepicker #formcontrol></nb-datepicker>
+    </div>
+
+  </div>
+
+  <div class="errorMessage" *ngIf="isInvalid">{{field.label}} is required</div>
+
+</div>

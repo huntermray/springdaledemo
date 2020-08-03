@@ -1,0 +1,52 @@
+{
+  "DebugMode": "False",
+  "ApplicationName": "Grave Editor v1.1",
+  "Theme": "dark",
+  "webMapIdDev": "30a62456ae394ab9826c8b655fd52c86",
+  "webMapIdProd": "30a62456ae394ab9826c8b655fd52c86",
+  "toBurialRelationship": "BurialRecords",
+  "toSalesRelationship": "SalesRecords",
+  "toContactRelationship": "ContactTable",
+  "toDeceasedRelationship": "DeceasedTable",
+  "toOwnerRelationship": "OwnerTable",
+  "toGravesitesRelationship": "gravesites",
+  "contactTableName": "ContactTable",
+  "deceasedTableName": "DeceasedTable",
+  "representativeTableName": "RepresentativeTable",
+  "ownerTableName": "OwnerTable",
+  "burialTableName": "BurialRecords",
+  "salesTableName": "SalesRecords",
+  "graveSitesLayerName": "Gravesites",
+
+  "WelcomeModalTitle": "Welcome to the Springdale Cemetery Records Manager!",
+  "WelcomeModalContent": "To get started, click on one of the tabs at the left\n, type in your search term (name, date, deed number, etc.) and matching records will be displayed.\n Alternatively, you can use the map to select a gravesite and see the related records on the left.\n Click the pencil icon to view or edit a record and the trash can to delete a record.\n\n Please note that deletions cannot be undone.",
+  "SearchResultLimit": 50,
+
+  "excludeContactTableFields": [
+    "pidno",
+    "surname",
+    "name"
+  ],
+  "peopleObjectIdField": "OBJECTID",
+  "SalesToOwnerRelTableProd": "https://services9.arcgis.com/YKY0FKp27dhx6JFd/ArcGIS/rest/services/Springdale_v3/FeatureServer/7",
+  "GravesitesToBurialsProd": "https://services9.arcgis.com/YKY0FKp27dhx6JFd/ArcGIS/rest/services/Springdale_v3/FeatureServer/8",
+  "SalesToOwnerRelTableDev": "https://services9.arcgis.com/YKY0FKp27dhx6JFd/ArcGIS/rest/services/Springdale_v3/FeatureServer/7",
+  "GravesitesToBurialsDev": "https://services9.arcgis.com/YKY0FKp27dhx6JFd/ArcGIS/rest/services/Springdale_v3/FeatureServer/8",
+  "ownerSearchResults": "surname, name",
+  "burialSearchResults": "servno__BurialID_",
+  "salesSearchResults": "grantno",
+  "SearchOptions": {
+    "Layers": [
+      {
+        "Title": "Subsections",
+        "Field": "Subsection"
+      },
+      {
+        "Title": "Burial Areas",
+        "Field": "Name"
+      }
+    ],
+    "PlaceholderText": "Subsection, Burial Area, or Grave site location"
+  },
+  "printService": "https://maps.northpointgis.com/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+}

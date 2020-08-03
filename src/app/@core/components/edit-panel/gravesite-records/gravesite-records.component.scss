@@ -1,0 +1,51 @@
+.row {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+    width: inherit;
+}
+
+.add-padding {
+  padding-right: 0.8rem !important;
+  padding-left: 0.8rem !important;
+}
+
+.row {
+  text-align: left !important;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  // padding: 8px;
+}
+
+.notfirst:hover {
+  background-color: #e7e7e7;
+  cursor: pointer;
+}
+
+.full-table {
+  width: 90%;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.to-edit {
+  color: #3366ff;
+  text-decoration: underline;
+}
+
+.editing {
+  color: #bbbbbb;
+  text-decoration: underline;
+}
+
+.ml {
+  margin-left: 0.8rem;
+}
+
+.mt {
+  margin-top: 0.8rem;
+}

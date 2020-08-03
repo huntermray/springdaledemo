@@ -1,0 +1,39 @@
+.row {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+    width: inherit;
+}
+
+.add-padding {
+  padding-right: 0.8rem !important;
+  padding-left: 0.8rem !important;
+}
+
+.row {
+  text-align: left !important;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  // padding: 8px;
+}
+
+.notfirst:hover {
+  background-color: #e7e7e7;
+  cursor: pointer;
+}
+
+.full-table {
+  width: 90%;
+}
+
+.home-image {
+  box-shadow: 5px 10px 8px #1a2138;
+}
+
+.help-modal {
+  width: 50%;
+  margin-left: 20%;
+  margin-right: 20%;
+}

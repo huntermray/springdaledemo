@@ -1,0 +1,155 @@
+<div class="add-padding pull-left">
+  <nb-card [hidden]="!loaded" [nbSpinner]="loaded" nbSpinnerSize="small" nbSpinnerStatus="primary">
+    <nb-card-body>
+    </nb-card-body>
+  </nb-card>
+  <div class="row">
+    <nb-card [hidden]="selectedPerson === ''" accent="info" center>
+      <nb-card-body status="warning">
+        {{selectedPerson?.surname}}<span >,&nbsp;</span>{{selectedPerson?.name}}
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="row">
+    <nb-radio-group class="radio-inline" (valueChange)="OnRadioChange($event)" [(ngModel)]="selectedOption">
+      <nb-radio class="radio-inline" value="owner">Owner</nb-radio>
+      <nb-radio class="radio-inline" value="representative">Representative</nb-radio>
+      <nb-radio class="radio-inline" value="deceased">Deceased</nb-radio>
+    </nb-radio-group>
+    <!-- <input type="text" nbInput fullWidth placeholder="Name" [(ngModel)]="personsName"
+      (keyup.enter)="searchByName()"> -->
+    <input type="text" nbInput fullWidth placeholder="First Name" [disabled]="loaded" [(ngModel)]="personFName"
+      (keyup.enter)="searchByName()">
+    <input type="text" nbInput fullWidth placeholder="Last Name" [disabled]="loaded" [(ngModel)]="personLName"
+      (keyup.enter)="searchByName()">
+    <input type="text" class="mt" nbInput fullWidth placeholder="PID Number" [disabled]="loaded" [(ngModel)]="pid"
+      (keyup.enter)="searchByPID()">
+  </div>
+  <div class="row">
+    <span [hidden]="peopleFound == true">No results found</span>
+  </div>
+  <div class="row">
+    <button nbButton [disabled]="(personLName.length < 2 && personFName.length < 2  && pid.length < 1) || searching || loaded" [nbSpinner]="searching" status="success"
+      (click)="searchByPID()">
+      <nb-icon icon="search-outline"></nb-icon>
+      Search
+    </button>
+    <!-- TODO: Add this back in -->
+    <!-- <button nbButton class="ml" status="info" (click)="addNewPerson()">
+      <nb-icon icon="plus-outline"></nb-icon>
+    </button> -->
+    <button nbButton class="ml" status="danger" (click)="clearResults()">
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </div>
+  <!-- Search Results -->
+  <div class="row to-edit cursor-pointer" [hidden]="personClicked === false || editClicked === true"
+    (click)="editPerson(true)">
+    Edit Person Record: {{selectedPerson?.surname}}, {{selectedPerson?.name}}
+    <nb-icon *ngIf="loading === false" icon="edit-outline"></nb-icon>
+    <nb-icon *ngIf="loading === true" icon="loader-outline"></nb-icon>
+  </div>
+  <div class="row editing cursor-pointer" [hidden]="editClicked === false" (click)="editPerson(false)">
+    Stop Editing
+    <nb-icon icon="edit-outline"></nb-icon>
+  </div>
+  <!-- Search results table -->
+  <div [hidden]="numPeople === 0 || personClicked === true">
+    <div class="row">
+      <table class="full-table">
+        <tr *ngIf="allPeople.length > 0">
+          <td><strong>Name</strong></td>
+          <td [hidden]="selectedOption !== 'deceased'"><strong>Date of Death</strong></td>
+          <td></td>
+        </tr>
+        <tr *ngFor="let person of allPeople | paginate: { itemsPerPage: 10, currentPage: p2, id: 'thisPerson' }"
+          class="notfirst" (click)="selectPerson(person)">
+          <td>{{person.display}}</td>
+          <td [hidden]="selectedOption !== 'deceased'">
+            {{person.dod}}
+          </td>
+          <td>
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+      <pagination-controls (pageChange)="p2 = $event" id="thisPerson" autoHide="true"></pagination-controls>
+    </div>
+  </div>
+  <!-- Data Editing Form -->
+  <ngx-features [featureData]="formData" *ngIf="editClicked === true" (cancel)="cancel()"
+    (saveComplete)="addPersonComplete($event)"></ngx-features>
+  <!-- Related Information -->
+  <div [hidden]="personClicked === false">
+    <!-- Related burial record results -->
+    <div *ngIf="selectedOption === 'representative' || selectedOption === 'deceased'">
+      <div class="row">
+        Related Burial Records ({{numBurial}})
+      </div>
+      <div class="row" [hidden]="numBurial == 0">
+        <table class="full-table">
+          <tr *ngFor="let burial of arcgisService.data.BurialRecords" class="notfirst">
+            <td (click)="selectBurial(burial)">{{burial[serviceNo]}}</td>
+            <td>
+              <nb-icon icon="edit-outline" (click)="selectBurial(burial)"></nb-icon>
+            </td>
+            <td>
+              <nb-icon icon="trash-2-outline" (click)="deleteBurial(delBurialDialog, burial)"></nb-icon>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="row">
+        <!-- <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewBurial()">Add Burial Record as
+          Representative</a> -->
+        <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewBurial()">Add New Burial Record</a>
+      </div>
+    </div>
+    <!-- Related sale record results -->
+    <div *ngIf="selectedOption === 'owner'">
+      <div class="row">
+        Related Sales Records ({{numSales}})
+      </div>
+      <div class="row" [hidden]="numSales == 0">
+        <table class="full-table">
+          <tr *ngFor="let sale of arcgisService.data.SalesRecords" class="notfirst">
+            <td (click)="selectSale(sale)">{{sale.display}}</td>
+            <td>
+              <nb-icon icon="edit-outline" (click)="selectSale(sale)"></nb-icon>
+            </td>
+            <td>
+              <nb-icon icon="trash-2-outline" (click)="deleteSale(dialog, sale)"></nb-icon>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="row">
+        <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewSale()">Add New Sales Record</a>
+      </div>
+    </div>
+  </div>
+  <!-- End of Search Result Details -->
+</div>
+
+<!-- Delete record confirmation dialog -->
+<ng-template #dialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">No</button>
+      <button nbButton class="ml" (click)="confirmSaleDelete(ref)" [nbSpinner]="deleting" status="danger">Yes</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #delBurialDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">No</button>
+      <button nbButton class="ml" (click)="confirmBurialDelete(ref)" [nbSpinner]="deleting" status="danger">Yes</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

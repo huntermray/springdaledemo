@@ -1,0 +1,203 @@
+<div class="add-padding pull-left">
+  <!-- <div class="row">
+    <p (click)="clearResults()"><nb-icon icon="arrow-left"></nb-icon><span> Back</span></p>
+  </div> -->
+  <div *ngIf="selectedPerson != null" class="row">
+      <nb-card [hidden]="selectedPerson === ''" accent="info">
+        <nb-card-body status="warning">
+          {{selectedPerson?.surname}}<span >,&nbsp;</span>{{selectedPerson?.name}}
+        </nb-card-body>
+      </nb-card>  
+  </div>
+  <div class="row">
+    <input type="text" nbInput fullWidth placeholder="Certificate No" [(ngModel)]="deedNumber"
+      (keyup.enter)="searchBySale()">
+      <hr>
+      <input nbInput fullWidth placeholder="Sale Date From" [nbDatepicker]="datepickerMin" [(ngModel)]="dateMin"
+      (keyup.enter)="searchBySale()">
+      <nb-datepicker nbInput fullWidth placeholder="Sale date From" #datepickerMin></nb-datepicker>
+      <input nbInput fullWidth placeholder="Sale Date To" [nbDatepicker]="datepickerMax" [(ngModel)]="dateMax"
+      (keyup.enter)="searchBySale()">
+      <nb-datepicker nbInput fullWidth placeholder="Sale date To" #datepickerMax></nb-datepicker>
+    <!-- </div> -->
+  </div>
+  <div class="row">
+    <span [hidden]="salesFound == true">No results found</span>
+  </div>
+  <div class="row">
+    <button nbButton [disabled]="searching" [nbSpinner]="searching" status="success" (click)="searchBySale()">
+      <nb-icon icon="search-outline"></nb-icon>
+      Search
+    </button>
+    <!-- <button nbButton class="ml" status="info" (click)="addNewSale()">
+      <nb-icon icon="plus-outline"></nb-icon>
+    </button> -->
+    <button nbButton class="ml" status="danger" (click)="clearResults()">
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </div>
+  <div class="row to-edit cursor-pointer" [hidden]="saleClicked === false || editClicked === true"
+    (click)="editSale(true)">
+    Edit Sale Record: {{ selectedSale?.grantno }}
+    <nb-icon *ngIf="loading === false" icon="edit-outline"></nb-icon>
+    <nb-icon *ngIf="loading === true" icon="loader-outline"></nb-icon>
+  </div>
+  <div class="row editing cursor-pointer" [hidden]="editClicked === false" (click)="editSale(false)">
+    Stop Editing
+    <nb-icon icon="edit-outline"></nb-icon>
+  </div>
+  <div [hidden]="numSales === 0 || saleClicked === true">
+    <div class="row">
+      <table class="full-table">
+          <tr *ngIf="salesRecords.length > 0">
+              <td><strong>Certificate No.</strong></td>
+              <td></td>
+            </tr>
+        <tr *ngFor="let sale of salesRecords | paginate: { itemsPerPage: 10, currentPage: p1, id: 'thisSale' }" class="notfirst" (click)="selectSale(sale)">
+          <td>{{sale.display}}</td>
+          <td>
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+      <pagination-controls (pageChange)="p1 = $event" id="thisSale" autoHide="true"></pagination-controls>
+    </div>
+  </div>
+  <!-- Data Editing Form -->
+  <!-- <hr *ngIf="dataAvailable === true"> -->
+  <ngx-features [featureData]="formData" *ngIf="editClicked === true" (cancel)="cancel()"
+    (saveComplete)="doneSaving($event)"></ngx-features>
+    <!-- <br> -->
+  <!-- <hr> -->
+
+  <!-- Related Information -->
+  <div [hidden]="saleClicked === false">
+    <div class="row">
+      Related Grave Sites ({{arcgisService.data.Gravesites.length}})
+    </div>
+    <div class="row" [hidden]="arcgisService.data.Gravesites.length === 0">
+      <table class="full-table">
+          <tr>
+              <td><strong>Location</strong></td>
+              <td></td>
+            </tr>
+        <tr *ngFor="let grave of arcgisService.data.Gravesites" class="notfirst" (click)="selectGrave(grave)">
+          <td>{{grave.Location}}</td>
+          <td>
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+          <!-- <td>
+            <nb-icon icon="trash-2-outline" (click)="deleteGrave(delGraveDialog, gravesite)"></nb-icon>
+          </td> -->
+        </tr>
+      </table>
+    </div>
+    <div class="row">
+      <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addGravesiteConnection(dialog)">Add Gravesite Record connection</a>
+    </div>
+
+    <div class="row">
+      Related Owner Records ({{arcgisService.data.OwnerTable.length}})
+    </div>
+    <div class="row" [hidden]="arcgisService.data.OwnerTable.length === 0">
+      <table class="full-table">
+          <tr>
+              <td><strong>Owner(s)</strong></td>
+              <td></td>
+              <td></td>
+            </tr>
+        <tr *ngFor="let people of arcgisService.data.OwnerTable" class="notfirst">
+          <td (click)="selectPeople(people, 'owner')">{{people.surname}}, {{people.name}}</td>
+          <td (click)="selectPeople(people, 'owner')">
+            <nb-icon icon="edit-outline"></nb-icon>
+          </td>
+          <td (click)="disassociateOwner(disAssociateDialog, people)">
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="row">
+      <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewPerson()">Add New Owner Record</a>
+    </div>
+    <div class="row">
+      <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addExistingPerson(ownerDialog)">Relate Existing Owner Record</a>
+    </div>
+  </div>
+</div>
+
+<!-- Add grave site confirmation dialog -->
+<ng-template #dialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">Cancel</button>
+      <button nbButton class="ml" (click)="confirmAddGraveConnection(ref)" [disabled]="true" status="primary">OK</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- Select an existing owner dialog -->
+<ng-template #ownerDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>Add owner to selected sales record</nb-card-header>
+    <nb-card-body>{{ data }}<br/>
+      <!-- Search input box -->
+      <div class="row">
+        <!-- <input type="text" nbInput fullWidth placeholder="Name" [(ngModel)]="personsName"
+        (keyup.enter)="searchByName()">
+        <button nbButton style="margin-top: 0.7rem;" [disabled]="(personsName.length < 2) || searching" [nbSpinner]="searching" status="success"
+          (click)="searchByName()">
+          <nb-icon icon="search-outline"></nb-icon>
+          Search
+        </button> -->
+        <input type="text" nbInput fullWidth placeholder="First Name" [(ngModel)]="personFName"
+          (keyup.enter)="searchByName()">
+        <input type="text" nbInput fullWidth placeholder="Last Name" [(ngModel)]="personLName"
+          (keyup.enter)="searchByName()">
+        <button nbButton style="margin-top: 0.7rem;" [disabled]="(personLName.length < 2 && personFName.length < 2 ) || searching" [nbSpinner]="searching" status="success"
+          (click)="searchByName()">
+          <nb-icon icon="search-outline"></nb-icon>
+          Search
+        </button>
+      </div>
+      <!-- Search results table -->
+      <div [hidden]="numPeople === 0 || personClicked === true">
+        <div class="row">
+          <table class="full-table">
+            <tr *ngFor="let person of allPeople | paginate: { itemsPerPage: 10, currentPage: p2, id: 'ownerPerson' }"
+              class="notfirst" (click)="selectPerson(person)">
+              <td>{{person.display}}</td>
+              <!-- <td [hidden]="selectedOption !== 'deceased'">
+                Date of Death: {{person.dod}}
+              </td> -->
+            </tr>
+          </table>
+        </div>
+        <div class="row">
+          <pagination-controls (pageChange)="p2 = $event" id="ownerPerson" autoHide="true"></pagination-controls>
+        </div>
+        <div class="row" *ngIf="selectedOwner != null">
+          Selected person: {{selectedOwner.surname}}, {{selectedOwner.name}}
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">Cancel</button>
+      <button nbButton class="ml" (click)="confirmAddOwnerConnection(ref)" [nbSpinner]="savingRelated" [disabled]="selectedOwner == null" status="primary">Attach</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- Disassociate owner dialog -->
+<ng-template #disAssociateDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">No</button>
+      <button nbButton class="ml" (click)="confirmRemoveConnection(ref)" [nbSpinner]="removingRelated" status="danger">Yes</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

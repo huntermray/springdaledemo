@@ -1,0 +1,91 @@
+@import './themes';
+
+.nb-theme-dark nb-tabset .tab-link {
+  font-size: 0.6rem !important;
+  padding: 1rem 1.1rem !important;
+}
+
+.main-container {
+  text-align: left;
+}
+
+.nb-theme-dark nb-tabset nb-tab {
+  padding: 1rem 0.2rem !important;
+}
+
+.nb-theme-corporate nb-tabset nb-tab {
+  padding: 1rem 0.2rem !important;
+}
+
+.nb-theme-corporate nb-tabset .tab-link {
+  font-size: 0.6rem !important;
+  padding: 1rem 1.1rem !important;
+}
+
+.nb-theme-default nb-tabset nb-tab {
+  padding: 1rem 0.2rem !important;
+}
+
+.nb-theme-default nb-tabset .tab-link {
+  font-size: 0.9rem !important;
+  padding: 1rem 1.1rem !important;
+}
+.nb-theme-default nb-tabset .tab.active .tab-link {
+  background-color: #edf1f7 !important;
+  border-radius: 4px !important;
+}
+
+nb-spinner.size-small {
+  background-color: white !important;
+}
+
+.nb-theme-default nb-card {
+  box-shadow: none !important;
+}
+
+.nb-theme-default input:disabled {
+  color: #3366ff !important;
+}
+
+@mixin nb-overrides() {
+  nb-select.size-medium button {
+    padding: 0.4375rem 2.2rem 0.4375rem 1.125rem !important;
+
+    nb-icon {
+      right: 0.41rem !important;
+    }
+  }
+  // overrides for the theme
+  nb-sidebar {
+    width: 26rem;
+  }
+
+  .main-container {
+    width: 26rem !important;
+  }
+
+  nb-layout-column {
+    padding: 0 !important;
+  }
+
+  .input-full-width::-webkit-input-placeholder {
+    color: #3366ff;
+  }
+  /* WebKit, Blink, Edge */
+  .input-full-width:-moz-placeholder {
+    color: #3366ff;
+  }
+  /* Mozilla Firefox 4 to 18 */
+  .input-full-width::-moz-placeholder {
+    color: #3366ff;
+  }
+  /* Mozilla Firefox 19+ */
+  .input-full-width:-ms-input-placeholder {
+    color: #3366ff;
+  }
+  /* Internet Explorer 10-11 */
+  .input-full-width::-ms-input-placeholder {
+    color: #3366ff;
+  }
+  /* Microsoft Edge */
+}

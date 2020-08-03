@@ -1,0 +1,14 @@
+<div class="header-container">
+  <nb-actions size="small">
+    <nb-action class="user-action" *nbIsGranted="['view', 'user']">
+      <nb-user id="user-menu" [nbContextMenu]="userMenu" [onlyPicture]="userPictureOnly" [name]="user?.fullName" [picture]="user?.picture">
+      </nb-user>
+    </nb-action>
+  </nb-actions>
+</div>
+
+<div class="header-container">
+  <div class="logo-container">
+    <a class="logo" href="#" (click)="navigateHome()">{{ applicationName }}</a>
+  </div>
+</div>

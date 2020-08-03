@@ -1,0 +1,136 @@
+<div class="add-padding pull-left">
+  <!-- Data Editing Form -->
+  <!-- <div class="row">
+    <p (click)="clearResults()"><nb-icon icon="arrow-left"></nb-icon><span> Back</span></p>
+  </div> -->
+  <div *ngIf="selectedPerson != null" class="row">
+      <nb-card [hidden]="selectedPerson === ''" accent="info">
+        <nb-card-body status="warning">
+          {{selectedPerson?.surname}}<span >,&nbsp;</span>{{selectedPerson?.name}}
+        </nb-card-body>
+      </nb-card>  
+  </div>
+  <div class="row to-edit cursor-pointer" [hidden]="editClicked === true || dataAvailable === false"
+    (click)="editGravesite(true)">
+    Edit Gravesite: {{currentGrave?.Location}}
+    <nb-icon icon="edit-outline"></nb-icon>
+    <!-- <nb-icon *ngIf="loading === true" icon="loader-outline"></nb-icon> -->
+  </div>
+  <div class="row editing cursor-pointer" [hidden]="editClicked === false" (click)="editGravesite(false)">
+    Stop Editing
+    <nb-icon icon="edit-outline"></nb-icon>
+  </div>
+  <ngx-features [featureData]="formData" *ngIf="editClicked === true" (cancel)="cancel()"
+    (saveComplete)="doneSaving($event)"></ngx-features>
+  <div class="row">
+    <nb-toggle [(ngModel)]="isChecked" *ngIf="editClicked === true" status="primary" (checkedChange)="toggleReadOnly($event)">Check to unlock editing</nb-toggle>
+    <!-- <nb-checkbox *ngIf="editClicked === true" status="primary" checked="isChecked" (checkedChange)="toggleReadOnly($event)">Check to unlock editing</nb-checkbox> -->
+  </div>
+  <!-- Editing buttons and insturctions -->
+  <div class="row">
+    <button *ngIf="sketchActive === false" nbButton status="info" (click)="addGravesite()"><!-- class="ml"-->
+      <nb-icon icon="plus-outline"></nb-icon>
+      Add
+    </button>
+    <button *ngIf="sketchActive === true" nbButton status="success" (click)="saveGravesiteEdits()">
+      <nb-icon icon="save-outline"></nb-icon>
+      Save Edits
+    </button><br>
+    <button *ngIf="sketchActive === true" nbButton status="danger" (click)="clearGravesiteEdits()"><!-- class="ml"-->
+      <nb-icon icon="close-outline"></nb-icon>
+      Discard
+    </button><br>
+  </div>
+  <div class="row mt" *ngIf="sketchActive === true">
+    <div>
+      <input type="number" nbInput required placeholder="Length (feet)" [(ngModel)]="newGraveLength">
+    </div>
+    <div>
+      <input type="number" nbInput required placeholder="Width (feet)" [(ngModel)]="newGraveWidth" class="mt"
+        value=null>
+    </div>
+  </div>
+  <div class="row mt" *ngIf="sketchActive === true">
+    <b>Instructions</b><br>
+    Enter a length and width in feet, then click anywhere on the map to add a grave of those dimensions.<br><br>
+    Click the gravesite to move and rotate it, then hit the green save button to save changes.<br><br>
+    Click the red discard button to discard all edits and go back.
+  </div>
+<!-- Related Information -->
+  <div class="row" [hidden]="dataAvailable === false"><!-- class="row add-padding pull-left"-->
+    Related Sales Records ({{arcgisService.data.SalesRecords.length}})
+  </div>
+  <div class="row" [hidden]="arcgisService.data.SalesRecords.length === 0">
+    <table class="full-table">
+      <tr>
+        <td><strong>Owner(s)</strong></td>
+        <td><strong>Certificate No.</strong></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr *ngFor="let sale of arcgisService.data.SalesRecords" class="notfirst">
+        <td (click)="selectSale(sale)"><span *ngFor="let owner of sale.relOwners">{{ owner.surname }}, {{ owner.name }}<br></span></td>
+        <td (click)="selectSale(sale)">{{ sale.grantno }}</td>
+        <td (click)="selectSale(sale)">
+          <nb-icon icon="edit-outline"></nb-icon>
+        </td>
+        <td (click)="deleteSale(delSaleDialog, sale)">
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="row" [hidden]="dataAvailable === false">
+    <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewSale()">Add New Sales Record</a>
+  </div>
+
+  <div class="row" [hidden]="dataAvailable === false">
+    Related Burial Records ({{arcgisService.data.BurialRecords.length}})
+  </div>
+  <div class="row" [hidden]="arcgisService.data.BurialRecords.length === 0">
+    <table class="full-table">
+      <tr>
+        <td><strong>Deceased</strong></td>
+        <td><strong>Service No.</strong></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr *ngFor="let burial of arcgisService.data.BurialRecords" class="notfirst">
+        <td><span *ngFor="let deceased of burial.relDeceased">{{ deceased.surname }}, {{ deceased.name }}</span></td>
+        <td (click)="selectBurial(burial)">{{burial[serviceNo]}}</td>
+        <td (click)="selectBurial(burial)">
+          <nb-icon icon="edit-outline"></nb-icon>
+        </td>
+        <td (click)="deleteBurial(delDialog, burial)">
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="row" [hidden]="dataAvailable === false">
+    <nb-icon icon="plus-outline"></nb-icon><a href="#" (click)="addNewBurial()">Add New Burial Record</a>
+  </div>
+
+<!-- Delete Burial confirmation -->
+<ng-template #delDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">No</button>
+      <button nbButton class="ml" (click)="confirmBurialDelete(ref)" [nbSpinner]="deleting" status="danger">Yes</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- Delete Sale confirmation -->
+<ng-template #delSaleDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header></nb-card-header>
+    <nb-card-body>{{ data }}</nb-card-body>
+    <nb-card-footer>
+      <button nbButton (click)="ref.close()" status="light">No</button>
+      <button nbButton class="ml" (click)="confirmSaleDelete(ref)" [nbSpinner]="deleting" status="danger">Yes</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
