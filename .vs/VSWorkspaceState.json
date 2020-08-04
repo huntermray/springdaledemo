@@ -1,18 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\node_modules",
-    "\\node_modules\\@nebular",
-    "\\node_modules\\@nebular\\theme",
-    "\\node_modules\\@nebular\\theme\\styles",
-    "\\node_modules\\@nebular\\theme\\styles\\core",
-    "\\node_modules\\@nebular\\theme\\styles\\core\\theming",
-    "\\node_modules\\@nebular\\theme\\styles\\themes",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\@theme",
-    "\\src\\app\\@theme\\styles"
+    "\\src\\app\\pages",
+    "\\src\\app\\pages\\dashboard",
+    "\\src\\app\\pages\\dashboard\\map",
+    "\\src\\assets"
   ],
-  "SelectedNode": "\\node_modules\\@nebular\\theme\\styles\\core\\theming\\_get-value.scss",
+  "SelectedNode": "\\src\\app\\pages\\dashboard\\map\\map.service.ts",
   "PreviewInSolutionExplorer": false
 }

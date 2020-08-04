@@ -413,6 +413,12 @@ export class MapService {
         maxSuggestions: 35,
       });
       this.mapView.ui.add(searchWidget, 'top-right');
+      // TODO: Need to find some way to get event result to fire the Gravesites Tab in edit-panel
+
+      /* searchWidget.on("select-result", function (event) {
+        // console.log("search result Location: ", event.result.feature.attributes.Location);
+        // console.log("search result OBJECTID: ", event.result.feature.attributes.OBJECTID);
+      });*/
     });
   }
 

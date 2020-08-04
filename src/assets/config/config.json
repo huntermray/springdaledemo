@@ -34,6 +34,7 @@
   "GravesitesToBurialsDev": "https://services9.arcgis.com/YKY0FKp27dhx6JFd/ArcGIS/rest/services/Springdale_v3/FeatureServer/8",
   "ownerSearchResults": "surname, name",
   "burialSearchResults": "servno__BurialID_",
+  "burialSearchResultsSort": "GraveID",
   "salesSearchResults": "grantno",
   "SearchOptions": {
     "Layers": [

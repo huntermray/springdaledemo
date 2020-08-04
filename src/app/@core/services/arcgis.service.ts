@@ -162,7 +162,7 @@ export class ArcgisService {
             // console.log('Extra Query: ', extraQuery);
           }
         }
-        orderField = this.config.get('burialSearchResults');
+        orderField = this.config.get('burialSearchResultsSort');
         break;
       case 'gravesite':
         break;
